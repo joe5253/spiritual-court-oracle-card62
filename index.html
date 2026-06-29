@@ -152,7 +152,7 @@
     <div class="card-flip" id="cardFlip">
       <div class="card-face card-back">
         <img id="cardBackImg"
-             src="https://raw.githubusercontent.com/joe5253/spiritual-court-images/main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/63card_back.webp"
+             src="https://cdn.jsdelivr.net/gh/joe5253/spiritual-court-images@main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/63card_back.webp"
              style="width:100%;height:100%;object-fit:cover;border-radius:16px;"
              alt="card back"
              onerror="this.style.display='none';document.getElementById('fallbackSeal').style.display='flex'">
@@ -290,7 +290,7 @@ const CARDS = [
 ];
 
 // ── IMAGE BASE URL ─────────────────────────────────────────────
-const IMG_BASE = 'https://raw.githubusercontent.com/joe5253/spiritual-court-images/main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/';
+const IMG_BASE = 'https://cdn.jsdelivr.net/gh/joe5253/spiritual-court-images@main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/';
 let deck=[],currentCard=null,isFlipped=false,drawn=0;
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function initDeck(){deck=shuffle(CARDS);drawn=0;updateCounter();}

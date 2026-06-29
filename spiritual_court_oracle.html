@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a0a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Spiritual Court Oracle</title>
+<style>
+  :root {
+    --bg:#0d0618; --purple-deep:#1a0a2e; --purple-mid:#2d1557;
+    --purple-light:#6b35b8; --gold:#c8a951; --gold-bright:#f0c940;
+    --gold-dim:#8a7030; --white:#f5f0ff; --grey:#a090c0;
+    --card-w:300px; --card-h:470px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;width:100%;background:var(--bg);font-family:'Georgia',serif;color:var(--white);overflow-x:hidden;}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at 15% 0%,   rgba(120,40,200,.55) 0%,transparent 45%),
+      radial-gradient(ellipse at 85% 10%,  rgba(200,169,81,.18) 0%,transparent 40%),
+      radial-gradient(ellipse at 50% 50%,  rgba(60,10,100,.40)  0%,transparent 60%),
+      radial-gradient(ellipse at 10% 90%,  rgba(80,20,160,.35)  0%,transparent 45%),
+      radial-gradient(ellipse at 90% 85%,  rgba(180,120,255,.15) 0%,transparent 40%),
+      linear-gradient(160deg, #0a0118 0%, #130828 35%, #0d0420 65%, #08011a 100%);}
+  #stars::before{content:'';position:absolute;inset:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%,rgba(255,255,255,.7) 0%,transparent 100%),
+      radial-gradient(1px 1px at 30% 65%,rgba(255,255,255,.5) 0%,transparent 100%),
+      radial-gradient(1px 1px at 50% 40%,rgba(255,255,255,.8) 0%,transparent 100%),
+      radial-gradient(1px 1px at 70% 15%,rgba(255,255,255,.5) 0%,transparent 100%),
+      radial-gradient(1px 1px at 85% 80%,rgba(255,255,255,.6) 0%,transparent 100%),
+      radial-gradient(1.5px 1.5px at 20% 85%,rgba(200,169,81,.6) 0%,transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 55%,rgba(200,169,81,.5) 0%,transparent 100%),
+      radial-gradient(1px 1px at 45% 90%,rgba(255,255,255,.5) 0%,transparent 100%),
+      radial-gradient(1px 1px at 92% 45%,rgba(255,255,255,.4) 0%,transparent 100%),
+      radial-gradient(1px 1px at 5%  50%,rgba(180,120,255,.6) 0%,transparent 100%),
+      radial-gradient(1px 1px at 75% 35%,rgba(255,255,255,.4) 0%,transparent 100%);}
+  .screen{position:relative;z-index:1;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+  .screen.active{display:flex;}
+
+  /* ACCESS */
+  #access-screen{text-align:center;gap:20px;}
+  .gavel-icon{font-size:64px;animation:floatGavel 3s ease-in-out infinite;}
+  @keyframes floatGavel{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-10px) rotate(5deg);}}
+  .deck-title{font-size:clamp(2rem,7vw,3.2rem);background:linear-gradient(135deg,var(--gold-bright),var(--gold),#e8c060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;text-transform:uppercase;line-height:1.2;}
+  .deck-subtitle{font-size:clamp(0.8rem,2.5vw,.9rem);color:var(--grey);letter-spacing:4px;text-transform:uppercase;}
+  .divider{width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .access-label{font-size:.8rem;letter-spacing:3px;color:var(--grey);text-transform:uppercase;}
+  #code-input{background:rgba(255,255,255,.05);border:1px solid var(--gold-dim);border-radius:8px;color:var(--gold-bright);font-size:1.4rem;letter-spacing:6px;text-align:center;text-transform:uppercase;padding:14px 24px;width:260px;outline:none;transition:border-color .3s,box-shadow .3s;}
+  #code-input:focus{border-color:var(--gold);box-shadow:0 0 20px rgba(200,169,81,.3);}
+  .btn-enter{background:linear-gradient(135deg,#4a1a8a,#2d1557);border:1px solid var(--gold);border-radius:8px;color:var(--gold-bright);font-size:1rem;letter-spacing:3px;text-transform:uppercase;padding:14px 40px;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(108,53,184,.4);}
+  .btn-enter:hover{background:linear-gradient(135deg,#6b35b8,#3d1f77);box-shadow:0 6px 30px rgba(200,169,81,.3);transform:translateY(-2px);}
+  .error-msg{color:#ff6b6b;font-size:.85rem;letter-spacing:1px;min-height:22px;}
+
+  /* MAIN */
+  #main-screen{gap:24px;justify-content:flex-start;padding-top:36px;padding-bottom:40px;}
+  .main-header{text-align:center;}
+  .main-title{font-size:clamp(1.3rem,4vw,1.9rem);background:linear-gradient(135deg,var(--gold-bright),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;text-transform:uppercase;}
+  .main-tagline{font-size:.75rem;color:var(--grey);letter-spacing:3px;text-transform:uppercase;margin-top:4px;}
+
+  /* CARD FLIP */
+  .card-scene{width:var(--card-w);height:var(--card-h);perspective:1200px;cursor:pointer;}
+  .card-flip{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.4,0,.2,1);}
+  .card-flip.flipped{transform:rotateY(180deg);}
+  .card-face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+  .card-back{background:linear-gradient(145deg,#2d1557,#1a0a2e,#0d0618);border:2px solid var(--gold-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;box-shadow:0 8px 40px rgba(108,53,184,.5),inset 0 0 60px rgba(108,53,184,.1);}
+  .card-back-seal{width:120px;height:120px;border:2px solid var(--gold-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(108,53,184,.3),transparent);box-shadow:0 0 30px rgba(200,169,81,.2);}
+  .seal-icon{font-size:52px;}
+  .card-back-title{font-size:1.1rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;line-height:1.4;}
+  .card-back-brand{font-size:.65rem;letter-spacing:4px;color:var(--gold-dim);text-transform:uppercase;}
+  .card-back::before,.card-back::after{content:'✦';position:absolute;color:var(--gold-dim);font-size:12px;}
+  .card-back::before{top:14px;left:14px;}
+  .card-back::after{bottom:14px;right:14px;}
+  .card-front{transform:rotateY(180deg);background:#0f0520;border:2px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;box-shadow:0 8px 40px rgba(200,169,81,.25);overflow:hidden;}
+  .card-front::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(200,169,81,.06),transparent 65%);pointer-events:none;z-index:0;}
+  .card-theme-badge{display:none;}
+  .card-number{display:none;}
+  .card-img{width:100%;height:100%;object-fit:cover;border-radius:16px;display:block;}
+  .card-name{display:none;}
+  .card-divider{display:none;}
+  .card-message{display:none;}
+  .card-keyword{display:none;}
+  .card-name{font-size:clamp(1rem,4vw,1.4rem);background:linear-gradient(135deg,var(--gold-bright),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:2px;text-align:center;line-height:1.3;}
+  .card-divider{width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+  .card-message{font-size:clamp(.78rem,2.6vw,.9rem);color:#c8b8f0;text-align:center;line-height:1.65;font-style:italic;padding:0 4px;}
+  .card-keyword{font-size:.7rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;background:rgba(200,169,81,.08);border:1px solid rgba(200,169,81,.25);border-radius:20px;padding:4px 16px;}
+
+  /* CONTROLS */
+  .controls{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:320px;}
+  .btn-row{display:flex;gap:10px;width:100%;}
+  .btn-draw{background:linear-gradient(135deg,#5a20a0,#3d1577);border:1px solid var(--gold);border-radius:10px;color:var(--gold-bright);font-size:.85rem;letter-spacing:2px;text-transform:uppercase;padding:14px 0;cursor:pointer;flex:1;transition:all .3s;box-shadow:0 4px 20px rgba(108,53,184,.4);}
+  .btn-draw:hover{background:linear-gradient(135deg,#7b35c8,#5a1fa0);box-shadow:0 6px 30px rgba(200,169,81,.3);transform:translateY(-2px);}
+  .card-hint{font-size:.7rem;color:var(--gold-dim);letter-spacing:2px;text-transform:uppercase;text-align:center;}
+  .btn-shuffle{background:transparent;border:1px solid var(--gold-dim);border-radius:10px;color:var(--grey);font-size:.85rem;letter-spacing:2px;text-transform:uppercase;padding:14px 0;cursor:pointer;flex:1;transition:all .3s;}
+  .btn-shuffle:hover{border-color:var(--gold);color:var(--gold-bright);box-shadow:0 0 15px rgba(200,169,81,.2);}
+  .card-scene.shuffling .card-flip{animation:cardShake .6s ease;}
+  @keyframes cardShake{
+    0%  {transform:rotate(0deg) translateX(0);}
+    10% {transform:rotate(-6deg) translateX(-8px);}
+    20% {transform:rotate(6deg)  translateX(8px);}
+    30% {transform:rotate(-5deg) translateX(-6px) translateY(-4px);}
+    40% {transform:rotate(5deg)  translateX(6px)  translateY(4px);}
+    50% {transform:rotate(-4deg) translateX(-5px) translateY(-3px);}
+    60% {transform:rotate(4deg)  translateX(5px);}
+    70% {transform:rotate(-2deg) translateX(-3px);}
+    80% {transform:rotate(2deg)  translateX(3px);}
+    90% {transform:rotate(-1deg) translateX(-1px);}
+    100%{transform:rotate(0deg) translateX(0);}
+  }
+  .card-counter{font-size:.75rem;color:var(--grey);letter-spacing:2px;}
+
+  /* RESULT PANEL */
+  .result-panel{display:none;background:rgba(45,21,87,.4);border:1px solid rgba(200,169,81,.2);border-radius:14px;padding:18px 20px;width:100%;max-width:320px;text-align:center;backdrop-filter:blur(10px);flex-direction:column;gap:10px;}
+  .result-panel.show{display:flex;animation:fadeSlide .5s ease;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .result-theme{font-size:.65rem;letter-spacing:3px;color:var(--gold-dim);text-transform:uppercase;}
+  .result-name{font-size:1.1rem;color:var(--gold-bright);letter-spacing:2px;text-transform:uppercase;}
+  .result-msg{font-size:.85rem;color:#c8b8f0;line-height:1.65;font-style:italic;}
+  .result-kw{font-size:.7rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;}
+
+  .footer{font-size:.65rem;color:var(--gold-dim);letter-spacing:2px;text-transform:uppercase;opacity:.6;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+  .shake{animation:shake .4s ease;}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<!-- ACCESS SCREEN -->
+<div id="access-screen" class="screen active">
+  <div class="gavel-icon">⚖️</div>
+  <div class="deck-title">Spiritual Court<br>Oracle</div>
+  <div class="deck-subtitle">Divine Justice · Karma · Spiritual Law</div>
+  <div class="divider"></div>
+  <div class="access-label">Enter Your Access Code</div>
+  <input type="text" id="code-input" placeholder="Enter code here" maxlength="12"
+         autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+  <div class="error-msg" id="error-msg"></div>
+  <button class="btn-enter" onclick="checkCode()">⚖ Enter the Court</button>
+  <div class="footer">PsychicSoulStar · Sacred Readings</div>
+</div>
+
+<!-- MAIN SCREEN -->
+<div id="main-screen" class="screen">
+  <div class="main-header">
+    <div class="main-title">⚖ Spiritual Court Oracle</div>
+    <div class="main-tagline">The Court Is Now In Session</div>
+  </div>
+  <div class="card-scene" id="cardScene" onclick="flipCard()">
+    <div class="card-flip" id="cardFlip">
+      <div class="card-face card-back">
+        <img id="cardBackImg"
+             src="https://raw.githubusercontent.com/joe5253/spiritual-court-images/main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/63card_back.webp"
+             style="width:100%;height:100%;object-fit:cover;border-radius:16px;"
+             alt="card back"
+             onerror="this.style.display='none';document.getElementById('fallbackSeal').style.display='flex'">
+        <div id="fallbackSeal" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:absolute;inset:0;">
+          <div class="card-back-seal"><div class="seal-icon">⚖️</div></div>
+        </div>
+      </div>
+      <div class="card-face card-front" id="cardFront">
+        <div class="card-theme-badge" id="cardTheme">—</div>
+        <div class="card-number" id="cardNumber">#00</div>
+        <img class="card-img" id="cardImg" src="" alt="" loading="lazy">
+        <div class="card-name" id="cardName">THE COURT RULES</div>
+        <div class="card-divider"></div>
+        <div class="card-message" id="cardMessage">Draw a card to receive your spiritual ruling.</div>
+        <div class="card-keyword" id="cardKeyword">✦ KEYWORD ✦</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-hint" id="cardHint">Draw a card to begin</div>
+  <div class="controls">
+    <div class="btn-row">
+      <button class="btn-draw" onclick="drawCard()">⚖ Draw</button>
+      <button class="btn-shuffle" onclick="shuffleDeck()">🔀 Shuffle</button>
+    </div>
+    <div class="card-counter" id="cardCounter">62 cards · Shuffled & Ready</div>
+  </div>
+  <div class="result-panel" id="resultPanel">
+    <div class="result-theme" id="rTheme"></div>
+    <div class="result-name" id="rName"></div>
+    <div class="result-msg" id="rMsg"></div>
+    <div class="result-kw" id="rKw"></div>
+  </div>
+  <div class="footer">PsychicSoulStar · Not for prediction — for truth</div>
+</div>
+
+<script>
+// ── HASHED ACCESS CODES (SHA-256) ─────────────────────────────
+// Plain codes: COURT2026 / SPIRITUAL / SACRED27 / PSS2026
+const VALID_HASHES = new Set([
+  '4561ade11ac448766c7ae1d03288ce3ddfb1dfd7fd02d487eb22b089da92ea6c',
+  '79d320dd02436d28b79db1f8cd5c29896e461e413fe77bafeb699d21c71a938d',
+  'c1992dcc084b5be7ddd671c68c783540566c8b9c2fa22918b68f06fce8642052',
+  '1302f6a3d494006585d9d6dc19b9ed98750f935bc1b8d997c3f0da1fce435314'
+]);
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkCode() {
+  const val = document.getElementById('code-input').value.toUpperCase().trim();
+  const err = document.getElementById('error-msg');
+  if (!val) { err.textContent = 'Please enter your access code.'; return; }
+  const hash = await sha256(val);
+  if (VALID_HASHES.has(hash)) {
+    document.getElementById('access-screen').classList.remove('active');
+    document.getElementById('main-screen').classList.add('active');
+    initDeck();
+  } else {
+    err.textContent = 'Invalid code. The court does not recognize you.';
+    const inp = document.getElementById('code-input');
+    inp.classList.add('shake');
+    setTimeout(() => inp.classList.remove('shake'), 400);
+  }
+}
+document.getElementById('code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkCode();
+});
+
+// ── CARDS ──────────────────────────────────────────────────────
+const CARDS = [
+  {n:1,name:"ORDER IN THE COURT",theme:"Courtroom & Karma",emoji:"⚖️",keyword:"AUTHORITY",msg:"Silence. The spiritual court demands your full attention. Something important is being decided in your life right now — and the ancestors are presiding. Be still, be honest, and show up with integrity."},
+  {n:2,name:"CASE DISMISSED",theme:"Courtroom & Karma",emoji:"🪬",keyword:"RELEASE",msg:"The charges against you have been dropped. Whatever guilt, shame, or accusation you have been carrying — the court has seen the truth. You are free to move forward. Let it go completely."},
+  {n:3,name:"THE VERDICT IS IN",theme:"Courtroom & Karma",emoji:"📜",keyword:"JUDGMENT",msg:"The decision has already been made in the spiritual realm. You do not need to keep wondering, waiting, or worrying. The outcome is sealed. Trust the ruling and prepare to receive it."},
+  {n:4,name:"REAP WHAT YOU SOW",theme:"Courtroom & Karma",emoji:"🌾",keyword:"KARMA",msg:"The seeds you have planted are coming back to you — exactly as you planted them. No more, no less. The universe is precise. This is not punishment; this is perfect spiritual accounting."},
+  {n:5,name:"CAUGHT RED-HANDED",theme:"Courtroom & Karma",emoji:"🔴",keyword:"EXPOSURE",msg:"Something hidden is about to be revealed — either in you or in someone around you. The spiritual court has evidence. Lies cannot survive this energy. Truth is non-negotiable right now."},
+  {n:6,name:"WHAT'S IN THE DARK",theme:"Courtroom & Karma",emoji:"🔦",keyword:"REVELATION",msg:"Light is being shined into the places you or someone else thought were safely hidden. Secrets, motives, and hidden truths are surfacing. Do not fear the light — it is protecting you."},
+  {n:7,name:"ACCOUNTABILITY",theme:"Courtroom & Karma",emoji:"🪞",keyword:"RESPONSIBILITY",msg:"The court is calling you to look in the mirror with complete honesty. Where have you played a role in your own pain? Accountability is not shame — it is the first step to genuine liberation."},
+  {n:8,name:"THE TRUTH HURTS",theme:"Courtroom & Karma",emoji:"💫",keyword:"CLARITY",msg:"A truth is arriving that will sting before it heals. Do not shoot the messenger. The discomfort you feel is the old illusion breaking apart to make room for something real and lasting."},
+  {n:9,name:"PAYBACK TIME",theme:"Courtroom & Karma",emoji:"🪃",keyword:"RETURN",msg:"What you sent out is coming back. If you sent love, love returns. If you sent harm, harm returns. The boomerang law is immutable. Check what energy you have been launching into the world."},
+  {n:10,name:"FALSE ACCUSATION",theme:"Courtroom & Karma",emoji:"☄️",keyword:"DEFLECTION",msg:"Someone has been pointing a finger at you to distract from their own wrongdoing. The court sees this clearly. Stop defending yourself loudly — your innocence will speak for itself in divine timing."},
+  {n:11,name:"THE FINAL WARNING",theme:"Courtroom & Karma",emoji:"⏳",keyword:"URGENCY",msg:"This is not the first time the universe has signaled this to you. It is the last call before consequences arrive. Take the sign seriously. Change what needs to change before the gavel falls."},
+  {n:12,name:"FACING THE MUSIC",theme:"Courtroom & Karma",emoji:"🎭",keyword:"CONFRONTATION",msg:"The time of avoidance is over. You must now stand in the spotlight and face what you have been running from. The ancestral audience is watching — not to shame you, but to witness your courage."},
+  {n:13,name:"NO SUGARCOATING",theme:"Courtroom & Karma",emoji:"🧂",keyword:"BLUNTNESS",msg:"The court will not soften this message: you already know what needs to happen. Stop waiting for a gentler version of the truth. The answer you keep avoiding is the correct one. Act on it."},
+  {n:14,name:"LIAR, LIAR",theme:"Courtroom & Karma",emoji:"🐍",keyword:"DECEPTION EXPOSED",msg:"Someone in your circle — or possibly you yourself — has been speaking things that are not true. Words have spiritual weight. Lies are eating away at the foundation. Truth must be spoken now."},
+  {n:15,name:"KARMA'S DELIVERY",theme:"Courtroom & Karma",emoji:"📦",keyword:"INCOMING",msg:"A karmic package is on its way to your door. You may not know what's inside, but the universe does — and it is delivered with precision. Prepare to receive exactly what was earned."},
+  {n:16,name:"THE DIVINE BALANCE",theme:"Courtroom & Karma",emoji:"⚖️",keyword:"EQUILIBRIUM",msg:"The scales are being restored to perfect balance. Something that felt unfairly heavy on one side is being corrected. Divine justice does not rush — but it always arrives. Trust the process completely."},
+  {n:17,name:"SNAKE IN THE GRASS",theme:"Warnings & Deception",emoji:"🐍",keyword:"BETRAYAL NEARBY",msg:"Someone around you is presenting themselves as safe while concealing hidden intentions. Study the shadow, not the smile. Your discernment is your spiritual armor right now — use it."},
+  {n:18,name:"WOLF IN SHEEP'S CLOTHING",theme:"Warnings & Deception",emoji:"🐺",keyword:"DISGUISE",msg:"Danger is wearing a gentle face. A person or situation that appears harmless is concealing a predatory nature underneath. Do not be charmed out of your intuition. The mask always slips eventually."},
+  {n:19,name:"TWO-FACED ENERGY",theme:"Warnings & Deception",emoji:"🎭",keyword:"DUALITY",msg:"Someone in your life is performing loyalty to your face and undermining you behind your back. The court has seen both faces. Withdraw your trust quietly and protect your energy without confrontation."},
+  {n:20,name:"THE SHADE ROOM",theme:"Warnings & Deception",emoji:"☂️",keyword:"GOSSIP",msg:"Your name is in someone's mouth — and not in celebration. People are discussing your life, your choices, and your story without your knowledge or permission. Raise your frequency and their words lose all power."},
+  {n:21,name:"SMILE TO YOUR FACE",theme:"Warnings & Deception",emoji:"🗡️",keyword:"FAKE LOYALTY",msg:"You are being embraced by someone holding a concealed weapon. Their warmth is strategy, not sincerity. Do not mistake comfort for safety. Notice the actions behind the affection — they tell the true story."},
+  {n:22,name:"ENERGY VAMPIRE",theme:"Warnings & Deception",emoji:"🦇",keyword:"DEPLETION",msg:"Someone in your life is feeding off your light, your enthusiasm, and your vitality — and giving very little in return. You are not tired from doing too much. You are tired from giving to the wrong person."},
+  {n:23,name:"GASLIGHTING",theme:"Warnings & Deception",emoji:"🔥",keyword:"MANIPULATION",msg:"Someone is working very hard to make you doubt your own valid perception of reality. Trust what you saw, heard, and felt. Your experience is real. The court validates your truth entirely."},
+  {n:24,name:"CLOUT CHASER",theme:"Warnings & Deception",emoji:"📱",keyword:"OPPORTUNISM",msg:"Someone near you is drawn to your energy, success, or presence for what they can gain — not for who you genuinely are. They follow the light, not the person. Recognize the difference and protect your space."},
+  {n:25,name:"SWEET TALKER",theme:"Warnings & Deception",emoji:"🍯",keyword:"FLATTERY",msg:"Beautiful words are being poured in your direction, but inspect the honey carefully — sharp things are hidden inside. You are being charmed for a purpose. Do not let skillful language bypass your spiritual discernment."},
+  {n:26,name:"SILENT JEALOUSY",theme:"Warnings & Deception",emoji:"💚",keyword:"ENVY",msg:"Someone close is smiling outwardly at your success while quietly seething with envy. They will never confess it. You don't need them to — simply note the lack of genuine enthusiasm and govern yourself accordingly."},
+  {n:27,name:"BOUGHT AND SOLD",theme:"Warnings & Deception",emoji:"📝",keyword:"COMPROMISE",msg:"A deal was made that came at a spiritual cost. Whether this is your deal or someone else's, the contract has consequences. Read the fine print of every agreement — including those of the heart — very carefully."},
+  {n:28,name:"HIDDEN AGENDA",theme:"Warnings & Deception",emoji:"🗺️",keyword:"CONCEALMENT",msg:"Someone is working toward a goal they have not disclosed to you. Their visible behavior is not the full picture. What they say they want and what they are actually planning are two very different things. Stay alert."},
+  {n:29,name:"THE TRAP IS SET",theme:"Warnings & Deception",emoji:"🪤",keyword:"DANGER AHEAD",msg:"Something that looks like an irresistible opportunity may be bait. Slow down before you step forward. The spiritual court is issuing this alert: if it seems too perfect and too easy, examine it more carefully before proceeding."},
+  {n:30,name:"PLAYING VICTIM",theme:"Warnings & Deception",emoji:"😢",keyword:"MANIPULATION",msg:"Someone is using the appearance of suffering to avoid accountability and manipulate your compassion. True pain does not require an audience. Offer empathy without abandoning your spiritual discernment and healthy boundaries."},
+  {n:31,name:"BAD COMPANY",theme:"Warnings & Deception",emoji:"👥",keyword:"INFLUENCE",msg:"The company you keep is shaping your vibration in ways you may not fully recognize yet. Negative associations lower your frequency, cloud your judgment, and slow your spiritual progress. Evaluate your circle with radical honesty."},
+  {n:32,name:"ANCESTRAL SHIELD",theme:"Spiritual Protection",emoji:"🛡️",keyword:"PROTECTION",msg:"Your ancestors have positioned themselves around you as an army of light. You are not walking this path alone. They are actively running interference on your behalf. You are covered. Move forward without fear."},
+  {n:33,name:"EVIL EYE PROTECTION",theme:"Spiritual Protection",emoji:"🧿",keyword:"DEFLECTION",msg:"Envious eyes have been directed at your blessings, your body, and your progress. The spiritual court has activated your protection. What was sent is being deflected. Continue to shine without explaining yourself to anyone."},
+  {n:34,name:"SPIRITUAL BATH",theme:"Spiritual Protection",emoji:"🌸",keyword:"CLEANSING",msg:"You are being guided to cleanse your energy on a deep level. Something has been lingering in your aura that does not belong to you. Physical and spiritual cleansing will reset your vibration and restore your clarity immediately."},
+  {n:35,name:"CHAKRA REALIGNMENT",theme:"Spiritual Protection",emoji:"🌈",keyword:"BALANCE",msg:"Your energy centers have been knocked out of alignment by stress, conflict, or spiritual attack. The court orders a full realignment. Ground your body, speak your truth, and reclaim the steady flow of your authentic life force."},
+  {n:36,name:"CORD CUTTING",theme:"Spiritual Protection",emoji:"✂️",keyword:"SEVERING",msg:"There is an energetic cord connecting you to a person, situation, or past wound that is actively draining your spiritual resources. The time for polite attachment is over. The court rules: cut the cord. Release completely and without apology."},
+  {n:37,name:"GROUNDED",theme:"Spiritual Protection",emoji:"🌿",keyword:"STABILITY",msg:"Before you make any major decision or take any next step, you must return to solid ground. Anxiety and scattered energy cannot produce wise choices. Plant your feet. Breathe. Your power comes from your rootedness, not your speed."},
+  {n:38,name:"THE ALCHEMIST",theme:"Spiritual Protection",emoji:"⚗️",keyword:"TRANSFORMATION",msg:"You have the spiritual power to transmute everything that has been used against you into fuel for your growth. Pain becomes wisdom. Betrayal becomes discernment. Loss becomes liberation. You are not the victim — you are the alchemist."},
+  {n:39,name:"CHOSEN ONE",theme:"Spiritual Protection",emoji:"✨",keyword:"DIVINE SELECTION",msg:"The light is on you specifically — not randomly, not by accident. You have been chosen for a particular path, a particular purpose, and a particular level of spiritual development. Stop minimizing what you were made to carry."},
+  {n:40,name:"RETURN TO SENDER",theme:"Spiritual Protection",emoji:"🪞",keyword:"REFLECTION",msg:"Every curse, every hex, every negative intention aimed at you is being reversed and returned to its origin. Your spiritual protection is fully active. Stop absorbing what was never yours to carry. Let it go back where it came from."},
+  {n:41,name:"SACRED BOUNDARIES",theme:"Spiritual Protection",emoji:"🔥",keyword:"PROTECTION LINES",msg:"You are being called to establish boundaries that are spiritually fortified — not just emotional preferences, but sacred law in your life. Decide what you will no longer allow. Then enforce it without guilt, without explanation, and without exceptions."},
+  {n:42,name:"INTUITION ON FIRE",theme:"Spiritual Protection",emoji:"👁️",keyword:"INNER KNOWING",msg:"Your third eye is wide open right now and receiving extremely clear spiritual information. The feeling you keep dismissing is actually divine intelligence. Stop second-guessing what you already deeply know. Act on the knowing."},
+  {n:43,name:"DIVINE INTERVENTION",theme:"Spiritual Protection",emoji:"🙌",keyword:"MIRACULOUS HELP",msg:"Help is coming from a source that is above human explanation. You have been praying, working, and waiting — and your request has been heard. Prepare for unexpected assistance arriving in an unexpected form at an unexpected moment."},
+  {n:44,name:"HEALING THE LINEAGE",theme:"Spiritual Protection",emoji:"👪",keyword:"ANCESTRAL HEALING",msg:"The work you are doing on yourself is not just for you — it is healing generations of pain that came before you and protecting generations that will come after. You are a healer of bloodlines. Honor the magnitude of your work."},
+  {n:45,name:"SPIRITUAL EVICTION",theme:"Spiritual Protection",emoji:"🚪",keyword:"REMOVAL",msg:"It is time to formally remove what has been occupying space in your life, your mind, and your spirit without permission. This may be a person, a habit, a belief, or an energy. Issue the spiritual eviction notice and hold firm to it."},
+  {n:46,name:"RECLAIMING YOUR POWER",theme:"Spiritual Protection",emoji:"⚡",keyword:"EMPOWERMENT",msg:"Somewhere along the way, you gave your power to a person, a fear, or a situation. The court rules today is the day you take it back. Every gift, every talent, every drop of your spiritual energy — it belongs to you. Reclaim all of it."},
+  {n:47,name:"BREAKING CHAINS",theme:"Life Lessons & Breakthroughs",emoji:"⛓️",keyword:"LIBERATION",msg:"The limitations that have held you back were never permanent — they were tests of your endurance and your willingness to choose freedom. The chains are breaking now. Stop holding on to what was designed to fall off you."},
+  {n:48,name:"THE WAIT IS OVER",theme:"Life Lessons & Breakthroughs",emoji:"🌅",keyword:"ARRIVAL",msg:"The thing you have been preparing for, praying for, and patiently enduring through is finally arriving. The gate is opening. Do not hesitate at the threshold out of habit or disbelief. Step forward immediately and receive what is yours."},
+  {n:49,name:"SILENT TREATMENT",theme:"Life Lessons & Breakthroughs",emoji:"🔇",keyword:"STRATEGIC SILENCE",msg:"Your greatest power right now is your silence. Do not respond, explain, defend, or engage. Let your stillness confuse those who expected drama from you. The court rules: conserve your energy. Silence is your spiritual authority."},
+  {n:50,name:"BURNT BRIDGES",theme:"Life Lessons & Breakthroughs",emoji:"🔥",keyword:"PERMANENT CLOSURE",msg:"Some connections were meant to be permanent closures, not temporary breaks. The bridge burned because it was not built to carry you forward. Stop trying to rebuild what the universe intentionally ended. Your path is ahead of you."},
+  {n:51,name:"SWEET REVENGE",theme:"Life Lessons & Breakthroughs",emoji:"🍾",keyword:"LIVING WELL",msg:"The sweetest revenge available to you is a life that is undeniably, visibly, joyfully thriving. Stop wasting energy on thoughts of those who wronged you. Channel everything into building the life that will speak louder than any retaliation ever could."},
+  {n:52,name:"CROSSROADS",theme:"Life Lessons & Breakthroughs",emoji:"🛤️",keyword:"DECISION",msg:"You are standing at a significant fork in your spiritual path. Every direction available to you leads somewhere real. Choose based on what aligns with your highest truth — not what is most comfortable or most familiar. This choice matters."},
+  {n:53,name:"TREADING WATER",theme:"Life Lessons & Breakthroughs",emoji:"🌊",keyword:"ENDURANCE",msg:"You are not sinking — you are holding on. Treading water is not failure; it is survival strategy until the storm passes and the current shifts. Your determination to stay above the surface is itself a form of spiritual warfare. Keep going."},
+  {n:54,name:"WASHED AWAY",theme:"Life Lessons & Breakthroughs",emoji:"💧",keyword:"RENEWAL",msg:"A powerful wave of spiritual energy is coming through to cleanse everything that has accumulated — the buildup of grief, stagnation, and old cycles. Surrender to the cleanse. What is washed away was never meant to be permanent."},
+  {n:55,name:"THE ULTIMATUM",theme:"Life Lessons & Breakthroughs",emoji:"⏱️",keyword:"DEADLINE",msg:"The universe is presenting you with a spiritual deadline. A decision must be made, and the window for making it on favorable terms is closing. Stop delaying out of fear. Choose. Even choosing nothing is a choice — and it carries consequences."},
+  {n:56,name:"VICTORIOUS",theme:"Life Lessons & Breakthroughs",emoji:"🏆",keyword:"TRIUMPH",msg:"You have already won this battle spiritually — the physical world is simply catching up to the ruling. Stand tall on the mountain of your endurance. What you survived was not supposed to defeat you, and it did not. You are victorious."},
+  {n:57,name:"WALKING AWAY",theme:"Life Lessons & Breakthroughs",emoji:"🚶",keyword:"MOVING ON",msg:"The most spiritually powerful move available to you right now is simply to walk away — without a speech, without a dramatic exit, without waiting for acknowledgment. Leave your past where it belongs and keep your eyes forward. Do not look back."},
+  {n:58,name:"BLESSING IN DISGUISE",theme:"Life Lessons & Breakthroughs",emoji:"🌧️",keyword:"HIDDEN GIFT",msg:"The storm you cursed was actually carrying gifts that only revealed themselves through rainfall. What felt like the worst thing that could happen was actually a carefully orchestrated redirection toward something far better than what you lost."},
+  {n:59,name:"NEW BEGINNINGS",theme:"Life Lessons & Breakthroughs",emoji:"🌱",keyword:"FRESH START",msg:"Life is breaking through concrete. Against all odds and in the most unlikely conditions, something new and vital is beginning to grow in your life. Do not dismiss it because it is small. Small is how extraordinary always starts."},
+  {n:60,name:"THE MASK DROPS",theme:"Life Lessons & Breakthroughs",emoji:"🎭",keyword:"AUTHENTICITY",msg:"The performance is over. The court is calling you back to the radical authenticity of your truest self — unpolished, unperformed, and completely real. The mask served its protective purpose. You no longer need it. Let it fall."},
+  {n:61,name:"OWN YOUR SHIT",theme:"Life Lessons & Breakthroughs",emoji:"💪",keyword:"OWNERSHIP",msg:"The court is not interested in who started it, what they did first, or what circumstances led here. Where did you contribute to this situation? Owning your portion — without taking on more than is yours — is the most liberating spiritual act available to you right now."},
+  {n:62,name:"ELEVATION",theme:"Life Lessons & Breakthroughs",emoji:"🌟",keyword:"ASCENSION",msg:"You are being called higher — to a level of consciousness, purpose, and spiritual alignment that leaves your old environment far below. Some things and some people simply cannot follow you to where you are being elevated. Release them with love and keep climbing."}
+];
+
+// ── IMAGE BASE URL ─────────────────────────────────────────────
+const IMG_BASE = 'https://raw.githubusercontent.com/joe5253/spiritual-court-images/main/BulkResize%20Spiritual%20Court%20Oracle%2062%20Webp/';
+let deck=[],currentCard=null,isFlipped=false,drawn=0;
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function initDeck(){deck=shuffle(CARDS);drawn=0;updateCounter();}
+function updateCounter(){const r=deck.length-drawn;document.getElementById('cardCounter').textContent=r>0?`${r} cards remaining · ${drawn} drawn`:'All cards drawn · Reshuffling...';}
+
+function drawCard(){
+  if(drawn>=deck.length){deck=shuffle(CARDS);drawn=0;}
+  currentCard=deck[drawn];drawn++;
+  const flip=document.getElementById('cardFlip');
+  flip.classList.remove('flipped');isFlipped=false;
+  document.getElementById('cardTheme').textContent=currentCard.theme;
+  document.getElementById('cardNumber').textContent=`#${String(currentCard.n).padStart(2,'0')}`;
+  document.getElementById('cardImg').src=`${IMG_BASE}${currentCard.n}.webp`;
+  document.getElementById('cardImg').alt=currentCard.name;
+  document.getElementById('cardName').textContent=currentCard.name;
+  document.getElementById('cardMessage').textContent=currentCard.msg;
+  document.getElementById('cardKeyword').textContent=`✦ ${currentCard.keyword} ✦`;
+  document.getElementById('rTheme').textContent=currentCard.theme;
+  document.getElementById('rName').textContent=currentCard.name;
+  document.getElementById('rMsg').textContent=currentCard.msg;
+  document.getElementById('rKw').textContent=`✦ ${currentCard.keyword} ✦`;
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('cardHint').textContent='Tap card to reveal your ruling';
+  updateCounter();
+}
+
+function shuffleDeck(){
+  deck=shuffle(CARDS);drawn=0;
+  currentCard=null;isFlipped=false;
+  document.getElementById('cardFlip').classList.remove('flipped');
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('cardHint').textContent='Deck shuffled · Draw a new card';
+  const scene=document.getElementById('cardScene');
+  scene.classList.remove('shuffling');
+  void scene.offsetWidth;
+  scene.classList.add('shuffling');
+  setTimeout(()=>scene.classList.remove('shuffling'),650);
+  updateCounter();
+}
+
+function flipCard(){
+  if(!currentCard)return;
+  const flip=document.getElementById('cardFlip');
+  isFlipped=!isFlipped;flip.classList.toggle('flipped',isFlipped);
+  if(isFlipped){
+    document.getElementById('cardHint').textContent='Tap again to return · Scroll down for full reading';
+    setTimeout(()=>document.getElementById('resultPanel').classList.add('show'),400);
+  } else {
+    document.getElementById('cardHint').textContent='Tap card to reveal your ruling';
+    document.getElementById('resultPanel').classList.remove('show');
+  }
+}
+</script>
+</body>
+</html>
